@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+   <h1>Список объявлений</h1>
+   {% if user.is_authenticated %}
+       <p> Алоххо пользователь: {{ user.username }} </p>
+       <h3>Зайти на личную страницу?</h3>
+       <a href="http://127.0.0.1:8000/articles/privatecommentlist/"> Wellcome {{ user.username }} </a>
+   {% else %}
+       <p> Привет, тебе нужно вступить в клуб </p>
+   {% endif %}
+   <hr>
+
+{# Поиск по названию статьи и категории #}
+   <form action="" method="get">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ filterset.form.as_p }}
+       {# Добавим кнопку отправки данных формы #}
+       <input type="submit" value="Найти" />
+   </form>
+<hr>
+
+   {% if articles %}
+       <table>
+           <tr>
+               <td><b> Время создания </b></td>
+               <td><b>Автор</b></td>
+               <td><b>Название</b></td>
+               <td><b>Текст объявления</b></td>
+               <td><b>Категория</b></td>
+               <td><b>Доп контент</b></td>
+           </tr>
+           {% for a in articles %}
+           <tr>
+               <td>{{ article.date_in|date:'d M Y' }}</td>
+               <td>{{ a.author }}</td>
+               <td><a href="{% url 'article_detail' a.id %}">{{ a.title|truncatewords:2 }}</a></td>
+               <td>{{ a.text|truncatewords:2 }}</td>
+               <td>{{ a.category }}</td>
+               {% if a.upload %}
+                   <td> <img src="{{ a.upload.url }}"> </td>
+               {% else %}
+                   <td> нет контента </td>
+               {% endif %}
+           </tr>
+           {% endfor %}
+       </table>
+   {% else %}
+       <h2>Статей нет!</h2>
+   {% endif %}
+
+   {# Добавляем пагинацию на страницу #}
+   {# Информация о предыдущих страницах #}
+   {% if page_obj.has_previous %}
+       <a href="?page=1">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+{% endblock content %}

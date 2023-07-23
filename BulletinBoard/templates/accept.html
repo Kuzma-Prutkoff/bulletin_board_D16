@@ -1,0 +1,17 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Коммент принят и мы рады
+{% endblock title %}
+
+{% block content %}
+  <hr>
+  <h1>Коммент принят и мы рады</h1>
+  <h5>{{ comment.text }}</h5>
+  <hr>
+
+  <button>
+     <a class="nav-link" href="{% url 'private_comment_list' %}"> <h4><strong> вернись я все прощу </strong></h4>
+      </a>
+  </button>
+{% endblock content %}

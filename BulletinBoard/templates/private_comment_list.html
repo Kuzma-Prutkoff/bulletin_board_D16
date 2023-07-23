@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block content %}
+   <h4>Список всех объявлений и список объявлений, на которые есть комментарии</h4>
+   {% if user.is_authenticated %}
+      <p><b> Алоххо пользователь: {{ user.username }} </b></p>
+   {% else %}
+      <p> Привет, тебе нужно вступить в клуб </p>
+   {% endif %}
+<hr>
+
+<h3> Все твои статьи</h3>
+{% if my_articles %}
+    <table>
+        <tr>
+            <td><b> Время создания </b></td>
+            <td><b>Автор</b></td>
+            <td><b>Название</b></td>
+            <td><b>Текст объявления</b></td>
+            <td><b>Категория</b></td>
+            <td><b>Доп контент</b></td>
+            {# Условие получается составным. #}
+            {% if perms.bu_bo_app.change_article or perms.bu_bo_app.delete_article %}
+                <td><b>Действия</b></td>
+            {% endif %}
+        </tr>
+        {% for art in my_articles %}
+        <tr>
+            <td>{{ art.date_in|date:'d M Y' }}</td>
+            <td>{{ art.author }}</td>
+            <td><a href="{% url 'article_detail' art.id %}">{{ art.title|truncatewords:2|censor }}</a></td>
+            <td>{{ art.text|truncatewords:2 }}</td>
+            <td>{{ art.category }}</td>
+            {% if art.upload %}
+                <td> <img src="{{ art.upload.url }}"> </td>
+            {% else %}
+                <td> нет контента </td>
+            {% endif %}
+            <td>
+               {# доступ для каждой ссылки теперь будем проверять отдельно, не забудь ЭТО ЦИКЛ ФОР, потому и art.id #}
+               {% if perms.bu_bo_app.change_article %}
+                   <a href="{% url 'article_update' pk=art.id %}">Изменить</a>
+               {% endif %}
+               {% if perms.bu_bo_app.delete_article %}
+                   <a href="{% url 'article_delete' pk=art.id %}">Удалить</a>
+               {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <h2>Статей нет!</h2>
+{% endif %}
+<hr>
+
+    <h3> Все комментарии к твоим статьям</h3>
+    <table>
+        {% for comm in my_comments%}
+            <tr>
+                <td><b> Автор Статьи</b></td>
+                <td><b> Статья </b></td>
+                <td><b> Автор комментария </b></td>
+                <td><b> Текст комментария </b></td>
+                <td><b> Действия </b></td>
+                <td><b> Статус </b></td>
+            </tr>
+            <tr>
+                <td>{{ comm.article.author}}</td>
+                <td>{{ comm.article.title}}</td>
+                <td>{{ comm.author }}</td>
+                <td>{{ comm.text|censor }}</td>
+                <td><a href="{% url 'comment_detail' pk=comm.id %}">Просмотреть</a></td>
+                <td>
+                    {% if comm.status %}
+                        <td> принят </td>
+                    {% else %}
+                        <td> не принят </td>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <br>
+            <p>У вас нет комментариев</p>
+        {% endfor %}
+    </table>
+{% endblock content %}

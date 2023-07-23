@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block content %}
+   <h1>Вот искомая тобою статья </h1>
+   {% if user.is_authenticated %}
+      <p> Алоххо пользователь: {{ user.username }} </p>
+      <h3>Зайти на личную страницу?</h3>
+      <a href="http://127.0.0.1:8000/articles/privatecommentlist/"> Wellcome {{ user.username }} </a>
+   {% else %}
+      <p> Привет, тебе нужно зарегистрироваться </p>
+   {% endif %}
+   <hr>
+
+   {% if article %}
+       <table>
+           <tr>
+               <td><b> Время создания </b></td>
+               <td><b> Автор статьи </b></td>
+               <td><b> Название </b></td>
+               <td><b> Текст объявления </b></td>
+               <td><b> Категория </b></td>
+               <td><b> Доп контент </b></td>
+           </tr>
+           <tr>
+               <td>{{ article.date_in|date:'d M Y' }}</td>
+               <td>{{ article.author }}</td>
+               <td>{{ article.title }}</td>
+               <td>{{ article.text}}</td>
+               <td>{{ article.category }}</td>
+               {% if article.upload %}
+                   <td> <img src="{{ article.upload.url }}"> </td>
+               {% else %}
+                   <td> нет контента </td>
+               {% endif %}
+           </tr>
+       </table>
+
+   <h2> комменты к ней </h2>
+   {% for comment in all_comments_ofthis_atricle %} <!-- все  коммент через get_context_data --  -->
+       <table>
+           <tr>
+               <td><b> автор комментария </b></td>
+               <td><b> Текст комментария </b></td>
+           </tr>
+           <tr>
+               <td>{{ comment.author }}</td>
+               <td>{{ comment.text|censor }}</td>
+           </tr>
+       </table>
+   {% empty %}
+       <td> у статьи нет комментариев </td>
+       {% endfor %}
+
+   {% else %}
+       <h2>Статей нет!</h2>
+   {% endif %}
+   <hr>
+
+   <button>
+       <a class="nav-link" href="{% url 'comment_create' article.id %}"> <h5> Напиши комментарий </h5> </a>
+   </button>
+<hr>
+
+{% endblock content %}
+
+

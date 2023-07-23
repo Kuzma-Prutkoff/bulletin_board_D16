@@ -1,0 +1,25 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+коммент
+{% endblock title %}
+
+{% block content %}
+<h3>Твой ник-нейм:</h3>
+        <h4>{{user.username}}</h4>
+   <hr>
+   <h3>Автор коммента: {{ comment.author }}</h3>
+   <h3>Текст коммента: {{ comment.text }}</h3>
+   <h3>Статья на которую коммент: {{ comment.article.title }}</h3>
+<hr>
+  <a href="{% url 'comment_delete' pk=comment.id %}">удалить</a>
+<br>
+  <a href="{% url 'comment_deny' pk=comment.id %}">отклонить</a>
+<br>
+  <a href="{% url 'comment_accept' pk=comment.id %}">принять</a>
+<hr>
+  <button>
+     <a class="nav-link" href="{% url 'private_comment_list' %}"> <h4><strong> вернись я все прощу </strong></h4>
+      </a>
+  </button>
+{% endblock content %}
